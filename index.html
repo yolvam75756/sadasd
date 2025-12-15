@@ -1,242 +1,700 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Secret Gallery</title>
-  <style>
-    /* ================== CSS ================== */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Secret Gallery</title>
 
-    .login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-    .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 400px; width: 100%; text-align: center; }
-    .login-box h1 { margin-bottom: 30px; color: #667eea; font-size: 28px; }
-    .login-box input { width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; margin-bottom: 20px; transition: border-color 0.3s; }
-    .login-box input:focus { outline: none; border-color: #667eea; }
-    .login-box button { width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
-    .login-box button:hover { transform: translateY(-2px); }
-    .error-message { color: #e74c3c; margin-top: 15px; font-size: 14px; }
-    .example-images { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 30px; }
-    .example-images img { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; }
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    .gallery-container { display: none; max-width: 1200px; margin: 0 auto; padding: 20px; }
-    .gallery-header { background: white; padding: 30px; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-    .gallery-header h1 { color: #667eea; margin-bottom: 20px; font-size: 32px; }
-    .search-box { display: flex; gap: 10px; margin-bottom: 15px; }
-    .search-box input { flex: 1; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; }
-    .search-box input:focus { outline: none; border-color: #667eea; }
-    .search-box button { padding: 12px 30px; background: #667eea; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
-    .search-box button:hover { background: #764ba2; }
-    .logout-btn { padding: 10px 25px; background: #e74c3c; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
-    .logout-btn:hover { background: #c0392b; }
-    .search-result { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; color: #667eea; font-weight: bold; }
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-    .gallery-item { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s; }
-    .gallery-item:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-    .gallery-item-header { padding: 15px; background: #f8f9fa; border-bottom: 2px solid #e0e0e0; }
-    .gallery-item-header h3 { color: #667eea; font-size: 18px; }
-    .gallery-item-content { padding: 15px; }
-    .gallery-item img { width: 100%; height: 250px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s; }
-    .gallery-item img:hover { transform: scale(1.05); }
-    .gallery-item video { width: 100%; border-radius: 10px; margin-bottom: 10px; }
-    .no-results { text-align: center; padding: 50px; background: white; border-radius: 20px; color: #999; font-size: 18px; }
+body {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
 
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); animation: fadeIn 0.3s; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    .modal-content { position: relative; margin: auto; padding: 20px; max-width: 90%; max-height: 90vh; display: flex; align-items: center; justify-content: center; height: 100%; }
-    .modal-content img { max-width: 100%; max-height: 90vh; object-fit: contain; }
-    .close { position: absolute; top: 20px; right: 40px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1001; }
-    .close:hover { color: #ccc; }
-    .hidden { display: none; }
+/* LOGIN SECTION */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
 
-    @media (max-width: 768px) {
-      .search-box { flex-wrap: wrap; }
-      .search-box input { width: 100%; }
-      .gallery-grid { grid-template-columns: 1fr; }
-      .example-images { grid-template-columns: repeat(2, 1fr); }
-    }
-  </style>
+.login-box {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 50px 40px;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-box h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: 700;
+}
+
+.login-box p {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.3s;
+  background: white;
+}
+
+.login-box input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.login-box button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.login-box button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.login-box button:active {
+  transform: translateY(0);
+}
+
+#errorMessage {
+  color: #ef4444;
+  margin-top: 15px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* GALLERY SECTION */
+.gallery-container {
+  display: none;
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.gallery-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 25px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-header h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #333;
+  font-weight: 700;
+}
+
+.search-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.search-box input {
+  padding: 14px 18px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 15px;
+  transition: all 0.3s;
+  background: white;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.search-box button {
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: white;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(245, 87, 108, 0.4);
+}
+
+.btn-outline {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.btn-outline:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
+}
+
+/* GALLERY GRID */
+.gallery-grid {
+  position: relative;
+  height: calc(100vh - 220px);
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 10px;
+}
+
+.gallery-grid::-webkit-scrollbar {
+  width: 10px;
+}
+
+.gallery-grid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+.gallery-grid::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 10px;
+}
+
+.gallery-item {
+  background: white;
+  margin: 10px;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.gallery-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.gallery-item h3 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.user-badge {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.gallery-item img,
+.gallery-item video {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.gallery-item img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.gallery-item video {
+  cursor: default;
+}
+
+.lazy-img {
+  filter: blur(10px);
+  transition: filter 0.3s;
+  background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+}
+
+.lazy-img.loaded {
+  filter: blur(0);
+}
+
+/* MODAL */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+  padding: 20px;
+}
+
+.modal img {
+  width: auto;
+  height: auto;
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.close {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  font-size: 50px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 1001;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.close:hover {
+  transform: rotate(90deg);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* NO RESULT */
+.no-result {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #666;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.no-result-icon {
+  font-size: 64px;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .search-box {
+    grid-template-columns: 1fr;
+  }
+  
+  .media-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  
+  .gallery-header h1 {
+    font-size: 24px;
+  }
+  
+  .login-box {
+    padding: 40px 30px;
+  }
+}
+</style>
 </head>
+
 <body>
-  <!-- ================== HTML ================== -->
-  <div id="loginPage" class="login-container">
-    <div class="login-box">
-      <h1>🔒 Admin</h1>
-      <input type="password" id="passwordInput" placeholder="ใส่รหัสผ่าน" />
-      <button onclick="checkPassword()">เข้าสู่ระบบ</button>
-      <div id="errorMessage" class="error-message"></div>
-      <div id="exampleImagesContainer" class="example-images hidden"></div>
+
+<!-- LOGIN -->
+<div id="loginPage" class="login-container">
+  <div class="login-box">
+    <h2>🔒 Secret Gallery</h2>
+    <p>กรุณาใส่รหัสผ่านเพื่อเข้าสู่ระบบ</p>
+    <input type="password" id="passwordInput" placeholder="รหัสผ่าน" onkeypress="if(event.key==='Enter')checkPassword()">
+    <button onclick="checkPassword()">เข้าสู่ระบบ</button>
+    <div id="errorMessage"></div>
+  </div>
+</div>
+
+<!-- GALLERY -->
+<div id="galleryPage" class="gallery-container">
+  <div class="gallery-header">
+    <h1>🎨 Gallery Management</h1>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อผู้ใช้..." onkeypress="if(event.key==='Enter')searchGallery()">
+      <button class="btn-primary" onclick="searchGallery()">ค้นหา</button>
+      <input type="number" id="topCountInput" placeholder="Top กี่คน?" min="1">
+      <button class="btn-secondary" onclick="showTopMedia()">Top Media</button>
+      <button class="btn-outline" onclick="showAll()">แสดงทั้งหมด</button>
+      <button class="btn-danger" onclick="logout()">ออกจากระบบ</button>
     </div>
   </div>
+  <div id="galleryGrid" class="gallery-grid"></div>
+</div>
 
-  <div id="galleryPage" class="gallery-container">
-    <div class="gallery-header">
-      <h1>🖼️ Gallery</h1>
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="ค้นหาจากชื่อผู้ใช้..." />
-        <button onclick="searchGallery()">ค้นหา</button>
-        <button onclick="showAll()">ทั้งหมด</button>
-        <button class="logout-btn" onclick="logout()">ออกจากระบบ</button>
-      </div>
-    </div>
-    <div id="galleryGrid" class="gallery-grid"></div>
-  </div>
+<!-- MODAL -->
+<div id="imageModal" class="modal" onclick="closeModal()">
+  <span class="close">&times;</span>
+  <img id="modalImage">
+</div>
 
-  <div id="imageModal" class="modal" onclick="closeModal()">
-    <span class="close">&times;</span>
-    <div class="modal-content">
-      <img id="modalImage" src="/placeholder.svg" alt="Full size image">
-    </div>
-  </div>
+<script>
+/* CONFIG */
+const CONFIG = {
+  password: "mikkee@999",
+  dataFile: "data.json"
+};
 
-  <script>
-    /* ================== CONFIG ================== */
-    const CONFIG = {
-      password: "mikkee@999",
-      dataFile: "data.json",
-      exampleImages: [
-        "https://static.vecteezy.com/system/resources/thumbnails/041/881/055/small/ai-generated-pic-abstract-dandelion-flower-background-extreme-closeup-with-natural-art-photo.jpg",
-        "https://static.vecteezy.com/system/resources/thumbnails/036/333/113/small/monarch-beautiful-butterflygraphy-beautiful-butterfly-on-flower-macrography-beautyful-nature-photo.jpg",
-        "https://img.freepik.com/free-photo/nature-landscape-with-hand-holding-frame_23-2149389986.jpg?semt=ais_se_enriched&w=740&q=80",
-        "https://thumbs.dreamstime.com/b/northern-sunset-part-2-941312.jpg",
-      ],
-      wrongPasswordMessage: "รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง"
-    };
+/* DATA */
+let galleryData = [];
+let currentData = [];
+let VS_DATA = [];
+const ITEM_HEIGHT = 420;
+const BUFFER = 5;
 
-    /* ================== JavaScript ================== */
-    let galleryData = [];
+/* INDEXED DB */
+const DB_NAME = "ImageCacheDB";
+const STORE_NAME = "images";
+let db;
 
-    async function loadData() {
+function openDB() {
+  return new Promise(resolve => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(STORE_NAME);
+    req.onsuccess = () => {
+      db = req.result;
+      resolve();
+    }
+  });
+}
+
+function getCachedImage(url) {
+  return new Promise(resolve => {
+    const tx = db.transaction(STORE_NAME);
+    const get = tx.objectStore(STORE_NAME).get(url);
+    get.onsuccess = () => resolve(get.result || null);
+  });
+}
+
+function cacheImage(url, blob) {
+  db.transaction(STORE_NAME, "readwrite")
+    .objectStore(STORE_NAME)
+    .put(blob, url);
+}
+
+/* LAZY LOAD */
+function lazyLoadImages() {
+  const imgs = document.querySelectorAll(".lazy-img:not(.loaded)");
+  const io = new IntersectionObserver(async entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const img = entry.target;
+      const url = img.dataset.src;
+      
       try {
-        const response = await fetch(CONFIG.dataFile);
-        galleryData = await response.json();
+        const cached = await getCachedImage(url);
+        if (cached) {
+          img.src = URL.createObjectURL(cached);
+        } else {
+          const blob = await fetch(url).then(r => r.blob());
+          img.src = URL.createObjectURL(blob);
+          cacheImage(url, blob);
+        }
+        img.classList.add("loaded");
       } catch (error) {
-        console.error("Error loading data:", error);
-        galleryData = [];
+        console.error("Error loading image:", error);
+        img.alt = "ไม่สามารถโหลดรูปภาพได้";
       }
+      
+      io.unobserve(img);
     }
+  }, { rootMargin: "200px" });
+  
+  imgs.forEach(img => io.observe(img));
+}
 
-    function checkPassword() {
-      const input = document.getElementById("passwordInput");
-      const errorMessage = document.getElementById("errorMessage");
-      const exampleContainer = document.getElementById("exampleImagesContainer");
+/* LOAD DATA */
+async function loadData() {
+  try {
+    const response = await fetch(CONFIG.dataFile);
+    const json = await response.json();
+    galleryData = json.data || json;
+    currentData = galleryData;
+    console.log("[v0] Loaded gallery data:", galleryData);
+  } catch (error) {
+    console.error("Error loading data:", error);
+    alert("ไม่สามารถโหลดข้อมูลได้");
+  }
+}
 
-      if (input.value === CONFIG.password) {
-        document.getElementById("loginPage").style.display = "none";
-        document.getElementById("galleryPage").style.display = "block";
-        loadData().then(() => displayGallery(galleryData));
-      } else {
-        errorMessage.textContent = CONFIG.wrongPasswordMessage;
-        exampleContainer.classList.remove("hidden");
-        exampleContainer.innerHTML = "";
-        CONFIG.exampleImages.forEach(imgUrl => {
-          const img = document.createElement("img");
-          img.src = imgUrl;
-          img.alt = "Example image";
-          exampleContainer.appendChild(img);
-        });
-      }
-    }
+/* LOGIN */
+function checkPassword() {
+  const input = passwordInput.value;
+  if (input !== CONFIG.password) {
+    errorMessage.textContent = "❌ รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่";
+    passwordInput.value = "";
+    passwordInput.focus();
+    return;
+  }
+  
+  errorMessage.textContent = "";
+  openDB().then(() => {
+    loginPage.style.display = "none";
+    galleryPage.style.display = "block";
+    loadData().then(() => initVirtualScroll(currentData));
+  });
+}
 
-    function displayGallery(data) {
-      const grid = document.getElementById("galleryGrid");
-      grid.innerHTML = "";
+/* VIRTUAL SCROLL */
+function initVirtualScroll(data) {
+  currentData = data;
+  VS_DATA = data;
+  
+  // Clear entire grid including spacer
+  galleryGrid.innerHTML = "";
+  galleryGrid.scrollTop = 0;
 
-      if (data.length === 0) {
-        grid.innerHTML = '<div class="no-results">ไม่พบข้อมูล</div>';
-        return;
-      }
+  // Create new spacer with correct height
+  const spacer = document.createElement("div");
+  spacer.id = "spacer";
+  spacer.style.height = `${VS_DATA.length * ITEM_HEIGHT}px`;
+  spacer.style.width = "100%";
+  galleryGrid.appendChild(spacer);
 
-      data.forEach(item => {
-        const galleryItem = document.createElement("div");
-        galleryItem.className = "gallery-item";
+  // Rebind scroll event
+  galleryGrid.onscroll = renderVirtualItems;
+  
+  // Initial render
+  renderVirtualItems();
+}
 
-        let content = `
-          <div class="gallery-item-header">
-            <h3>👤 ${item.user}</h3>
-            ${item.text ? `<p>${item.text}</p>` : ""}
-          </div>
-          <div class="gallery-item-content">
-        `;
+function renderVirtualItems() {
+  const grid = galleryGrid;
+  
+  // Remove only gallery items, keep spacer
+  grid.querySelectorAll(".gallery-item, .no-result").forEach(el => el.remove());
 
-        item.images.forEach(imgUrl => {
-          content += `<img src="${imgUrl}" alt="${item.user}" onclick="openModal('${imgUrl}')">`;
-        });
+  if (VS_DATA.length === 0) {
+    const msg = document.createElement("div");
+    msg.className = "no-result";
+    msg.innerHTML = `
+      <div class="no-result-icon">🔍</div>
+      <div>ไม่พบข้อมูลที่ค้นหา</div>
+    `;
+    grid.appendChild(msg);
+    return;
+  }
 
-        item.videos.forEach(videoUrl => {
-          content += `<video controls>
-            <source src="${videoUrl}" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>`;
-        });
+  const scrollTop = grid.scrollTop;
+  const viewportHeight = grid.clientHeight;
+  const start = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - BUFFER);
+  const end = Math.min(VS_DATA.length, Math.ceil((scrollTop + viewportHeight) / ITEM_HEIGHT) + BUFFER);
 
-        content += "</div>";
-        galleryItem.innerHTML = content;
-        grid.appendChild(galleryItem);
-      });
-    }
+  for (let i = start; i < end; i++) {
+    const element = createGalleryItem(VS_DATA[i]);
+    element.style.position = "absolute";
+    element.style.top = `${i * ITEM_HEIGHT}px`;
+    element.style.left = "0";
+    element.style.right = "0";
+    grid.appendChild(element);
+  }
+  
+  lazyLoadImages();
+}
 
-    function searchGallery() {
-      const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
-      if (!searchTerm) return showAll();
+function createGalleryItem(item) {
+  const div = document.createElement("div");
+  div.className = "gallery-item";
+  
+  const totalMedia = item.images.length + item.videos.length;
+  
+  div.innerHTML = `
+    <h3>
+      <span>👤 ${item.user}</span>
+      <span class="user-badge">${totalMedia} ไฟล์</span>
+    </h3>
+    <div class="media-grid">
+      ${item.images.map(url => `
+        <img class="lazy-img" 
+             data-src="${url}" 
+             alt="${item.user}"
+             onclick="openModal('${url}')">`
+      ).join("")}
+      ${item.videos.map(videoUrl => `
+        <video controls 
+               playsinline 
+               preload="metadata"
+               src="${videoUrl}"></video>`
+      ).join("")}
+    </div>
+  `;
+  
+  return div;
+}
 
-      const filteredData = galleryData.filter(item => item.user.toLowerCase().includes(searchTerm));
-      const grid = document.getElementById("galleryGrid");
-      grid.innerHTML = "";
+/* FEATURES */
+function showAll() {
+  searchInput.value = "";
+  topCountInput.value = "";
+  initVirtualScroll(galleryData);
+}
 
-      const resultMessage = document.createElement("div");
-      resultMessage.className = "search-result";
-      if (filteredData.length > 0) {
-        resultMessage.textContent = `เจอ ${filteredData.length} รายการจากการค้นหา "${searchTerm}"`;
-        resultMessage.style.color = "#27ae60";
-      } else {
-        resultMessage.textContent = `ไม่พบข้อมูลจากการค้นหา "${searchTerm}"`;
-        resultMessage.style.color = "#e74c3c";
-      }
-      grid.appendChild(resultMessage);
+function searchGallery() {
+  const searchTerm = searchInput.value.trim().toLowerCase();
+  
+  if (!searchTerm) {
+    showAll();
+    return;
+  }
+  
+  const filteredData = galleryData.filter(item => 
+    item.user && item.user.toLowerCase().includes(searchTerm)
+  );
+  
+  // Reinitialize virtual scroll with filtered data
+  initVirtualScroll(filteredData);
+  
+  // Clear top count input when searching
+  topCountInput.value = "";
+}
 
-      if (filteredData.length > 0) displayGallery(filteredData);
-      else {
-        const noResults = document.createElement("div");
-        noResults.className = "no-results";
-        noResults.textContent = "ลองค้นหาด้วยคำอื่นดูไหม?";
-        grid.appendChild(noResults);
-      }
-    }
+function showTopMedia() {
+  const count = parseInt(topCountInput.value) || 0;
+  
+  if (count <= 0) {
+    alert("กรุณาใส่จำนวนที่มากกว่า 0");
+    return;
+  }
+  
+  const sorted = [...galleryData]
+    .map(item => ({
+      ...item,
+      totalMedia: item.images.length + item.videos.length
+    }))
+    .sort((a, b) => b.totalMedia - a.totalMedia)
+    .slice(0, count);
+  
+  initVirtualScroll(sorted);
+  searchInput.value = "";
+}
 
-    function showAll() {
-      document.getElementById("searchInput").value = "";
-      displayGallery(galleryData);
-    }
+/* MODAL */
+function openModal(url) {
+  modalImage.src = url;
+  imageModal.style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
 
-    function logout() {
-      document.getElementById("loginPage").style.display = "flex";
-      document.getElementById("galleryPage").style.display = "none";
-      document.getElementById("passwordInput").value = "";
-      document.getElementById("errorMessage").textContent = "";
-      document.getElementById("exampleImagesContainer").classList.add("hidden");
-    }
+function closeModal() {
+  imageModal.style.display = "none";
+  document.body.style.overflow = "";
+}
 
-    function openModal(imgUrl) {
-      const modal = document.getElementById("imageModal");
-      const modalImg = document.getElementById("modalImage");
-      modal.style.display = "block";
-      modalImg.src = imgUrl;
-    }
+imageModal.addEventListener('touchstart', function(e) {
+  if (e.target === imageModal) {
+    closeModal();
+  }
+});
 
-    function closeModal() {
-      document.getElementById("imageModal").style.display = "none";
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("passwordInput")?.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") checkPassword();
-      });
-      document.getElementById("searchInput")?.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") searchGallery();
-      });
-    });
-  </script>
+// Auto-focus password input on page load
+window.onload = () => {
+  passwordInput.focus();
+};
+</script>
 </body>
 </html>
